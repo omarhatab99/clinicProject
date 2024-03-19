@@ -1,0 +1,11 @@
+﻿@model PaymentViewModel;
+<tr>
+    <td>@Model.Date.ToString("MMMM dd, yyyy")</td>
+    <td>@Model.Type</td>
+    <td>@Model.Value <span>EPG</span></td>
+    <td title="@Model.Note"> 
+        <p style="max-width:100px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+            @((Model.Note == null) ? "No Note" : @Model?.Note?.ToString())
+        </p>
+    </td>
+</tr>
