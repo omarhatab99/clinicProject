@@ -2,7 +2,14 @@
 <tr>
     <td>@Model.Date.ToString("MMMM dd, yyyy")</td>
     <td>@Model.Type</td>
-    <td>@Model.Value <span>EPG</span></td>
+    @if (Model.Value > 0)
+    {
+        <td class="text-success">@Model.Value <span>EPG</span></td>
+    }
+    else
+    {
+        <td class="text-danger">@Model.Value <span>EPG</span></td>
+    }
     <td title="@Model.Note"> 
         <p style="max-width:100px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
             @((Model.Note == null) ? "No Note" : @Model?.Note?.ToString())

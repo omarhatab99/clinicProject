@@ -32,7 +32,7 @@
             paymentObject.type = paymentForm.payment_type.value;
             paymentObject.value= paymentForm.payment_value.value;
             paymentObject.note = paymentForm.payment_note.value;
-
+            paymentObject.patientid = document.getElementById("PaymentPatientId").value;
             $.post({
 
                 url: "/Payments/Create",
@@ -43,6 +43,7 @@
                     "type": paymentObject.type,
                     "value": paymentObject.value,
                     "note": paymentObject.note,
+                    "patientId":paymentObject.patientid,
                     "__RequestVerificationToken": $("#tokkenForgery").val(),
 
                 },
@@ -51,7 +52,7 @@
                     Swal.fire({
                         position: "center",
                         icon: "success",
-                        title: "Reservation has been Cancelled",
+                        title: "Payment has been Registerd",
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {

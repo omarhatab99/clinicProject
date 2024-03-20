@@ -13,6 +13,7 @@
     <!--Begin Card::Body-->
     <div class="card-body">
         <form id="AnalysisForm" method="post" asp-controller="Analysis">
+            <input asp-for="IsDeleted" hidden />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="row">
                 <div class="col-6">
