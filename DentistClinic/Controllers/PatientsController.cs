@@ -34,7 +34,8 @@ namespace DentistClinic.Controllers
                     PhoneNumber = x.PhoneNumber,
                     Gender = x.Gender,
                     BirthDate = x.BirthDate,
-                    IsDeleted = x.IsDeleted
+                    IsDeleted = x.IsDeleted,
+
                 }).ToList();
             return View(vmodels);
         }
@@ -79,7 +80,45 @@ namespace DentistClinic.Controllers
         {
             //get patient 
             Patient model = _unitOfWork.patientRepository.GetById(id);
-            return View(model);
+            PatientViewModel vmodel = new PatientViewModel()
+            {
+                Id = model.Id,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                FullName = model.FullName,
+                PhoneNumber = model.PhoneNumber,
+                Address = model.Address,
+                Gender = model.Gender,
+                BirthDate = model.BirthDate,
+                Occupation = model.Occupation,
+                ProfilePicture = model.ProfilePicture,
+                Appointments = model.Appointments.Select(x => new AppointmentViewModel
+                {
+                    Id = x.Id,
+                    Start = x.Start,
+                    End = x.End,
+                    StartTime = x.StartTime,
+                    EndTime = x.EndTime,
+                    PatientId = (int)x.PatientId!
+                }).ToList(),
+                PaymentRecords = model.PaymentRecords,
+                ChiefComplainPatients = model.ChiefComplainPatients,
+                Tplans = model.Tplans,
+                MedicalHistories = model.MedicalHistories.Select(x => new MedicalReportViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    Notes = x.Notes,
+                    Documentations = x.MedicalHistoryImages.Select(x => x.Image).ToList(),
+                    PatientId = x.PatientId
+                }).ToList(),
+                Prescriptions = model.Prescriptions,
+                CurentBalance = model.CurentBalance
+            };
+
+            return View(vmodel);
         }
 
         [HttpPost]

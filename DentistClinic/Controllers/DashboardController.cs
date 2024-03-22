@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DentistClinic.Controllers
 {
-    [Authorize(Roles = "Doctor , Reception")]
+    //[Authorize(Roles = "Doctor , Reception")]
 
     public class DashboardController : Controller
     {

@@ -11,8 +11,10 @@ namespace DentistClinic.Services.Repository
         public IAnalysisRepository analysisRepository { get; set; }
 		public IContactRepository contactRepository { get; set; }
         public IPaymentsRepository paymentsRepository { get; set; }
+        public IMedicalHistoryRepository medicalHistoryRepository { get; set; }
+        public IMedicalHistoryImageRepository medicalHistoryImageRepository { get; set; }
 
-        public UnitOfWork(IPatientRepository patientRepository, IAppointmentRepository appointmentRepository, IMedicineRepository medicineRepository, IXrayRepository xrayRepository, IAnalysisRepository analysisRepository = null, IContactRepository contactRepository = null, IPaymentsRepository paymentsRepository = null)
+        public UnitOfWork(IPatientRepository patientRepository, IAppointmentRepository appointmentRepository, IMedicineRepository medicineRepository, IXrayRepository xrayRepository, IAnalysisRepository analysisRepository = null, IContactRepository contactRepository = null, IPaymentsRepository paymentsRepository = null, IMedicalHistoryRepository medicalHistoryRepository = null, IMedicalHistoryImageRepository medicalHistoryImageRepository = null)
         {
             this.patientRepository = patientRepository;
             this.appointmentRepository = appointmentRepository;
@@ -21,6 +23,8 @@ namespace DentistClinic.Services.Repository
             this.analysisRepository = analysisRepository;
             this.contactRepository = contactRepository;
             this.paymentsRepository = paymentsRepository;
+            this.medicalHistoryRepository = medicalHistoryRepository;
+            this.medicalHistoryImageRepository = medicalHistoryImageRepository;
         }
 
 

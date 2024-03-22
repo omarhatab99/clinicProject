@@ -1,10 +1,11 @@
-﻿using DentistClinic.Services.Interfaces;
+﻿using DentistClinic.Core.ViewModels;
+using DentistClinic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentistClinic.Controllers
 {
-	[Authorize(Roles = "Doctor , Reception")]
+	//[Authorize(Roles = "Doctor , Reception")]
 	public class ReservationsController : Controller
 	{
         private readonly IUnitOfWork _unitOfWork;
@@ -16,9 +17,19 @@ namespace DentistClinic.Controllers
 
 		public IActionResult Index()
 		{
-			var model = _unitOfWork.appointmentRepository.UpComming();
-			model = model.Where(a => a.PatientId != null).ToList();
-			return View(model);
+            List<AppointmentViewModel> vmodel = _unitOfWork.appointmentRepository.GetAll().Where(x => x.Patient != null)
+            .Select(x => new AppointmentViewModel
+            {
+                Id = x.Id,
+                Start = x.Start,
+                End = x.End,
+                StartTime = x.StartTime,
+                EndTime = x.EndTime,
+                PatientId = (int)x.PatientId!,
+                Patient = x.Patient!
+            }).ToList();
+
+			return View(vmodel);
 		}
 	}
 }

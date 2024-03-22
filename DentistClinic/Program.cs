@@ -58,6 +58,8 @@ namespace DentistClinic
             builder.Services.AddScoped<IAnalysisRepository, AnalysisRepository>();
             builder.Services.AddScoped<IContactRepository, ContactRepository>();
             builder.Services.AddScoped<IPaymentsRepository, PaymentsRepository>();
+            builder.Services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
+            builder.Services.AddScoped<IMedicalHistoryImageRepository, MedicalHistoryImageRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 

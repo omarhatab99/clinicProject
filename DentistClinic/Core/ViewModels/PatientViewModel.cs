@@ -39,11 +39,12 @@ namespace DentistClinic.Core.ViewModels
         public double CurentBalance { get; set; } = 0;
         public Boolean IsDeleted { get; set; } = false;
         public byte[]? ProfilePicture { get; set; }
-        public List<PaymentRecord> PaymentRecords { get; set; } = new List<PaymentRecord>();
-        public  List<Appointment> Appointments { get; set; } = new List<Appointment>();
-        public List<ChiefComplainPatient> ChiefComplainPatients { get; set; } = new List<ChiefComplainPatient>();
-        public List<Tplans> Tplans { get; set; } = new List<Tplans>();
-        public List<MedicalHistory> MedicalHistories { get; set; } = new List<MedicalHistory>();
-        public List<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public virtual ICollection<PaymentRecord> PaymentRecords { get; set; } = new List<PaymentRecord>();
+        public virtual List<AppointmentViewModel> Appointments { get; set; } = new List<AppointmentViewModel>();       
+        public virtual ICollection<ChiefComplainPatient> ChiefComplainPatients { get; set; } = new List<ChiefComplainPatient>();
+        public virtual ICollection<Tplans> Tplans { get; set; } = new List<Tplans>();
+        public virtual List<MedicalReportViewModel> MedicalHistories { get; set; } = new List<MedicalReportViewModel>();
+        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public MedicalReportViewModel? MedicalReportViewModel { get; set; }
     }
 }

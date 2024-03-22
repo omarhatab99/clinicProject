@@ -7,15 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\contact.js" />
     <Content Remove="wwwroot\js\Register.js" />
+    <Content Remove="wwwroot\js\xray.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\js\contact.js" />
     <_ContentIncludedByDefault Remove="wwwroot\js\Register.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\xray.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\js\contact.js" />
     <None Include="wwwroot\js\Register.js" />
+    <None Include="wwwroot\js\xray.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +44,21 @@
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Medicines\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Medicines\_Medicine.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Medicines\_Form.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

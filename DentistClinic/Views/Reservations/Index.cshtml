@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Appointment>
+﻿@model IEnumerable<AppointmentViewModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -21,7 +21,7 @@
 		</div>
 		<!--begin::Content-->
 		<div class="d-flex flex-column pe-0 pe-sm-10">
-			<h5 class="mb-1">Upcomming Reservations</h5>
+			<h5 class="mb-1">Reservations</h5>
 		</div>
 		<!--end::Content-->
 	</div>
@@ -83,25 +83,45 @@
 						<th>Date</th>
 						<th>StartTime</th>
 						<th>EndTime</th>
-						<th>Patient</th>
+						<th>Status</th>
+						<th class="text-center">Patient</th>
 					</tr>
 				</thead>
 				<tbody>
-					@if (Model.Count() == 0)
+					@foreach (var appointment in Model)
 					{
-						<tr> <td colspan="4" class="text-center">There is no UpComming Appointments</td></tr>
-					}
-					else
-					{
-						foreach (var item in Model)
-						{
-							<tr>
-								<td>@item.Start.ToString("ddd dd MMM yy")</td>
-								<td>@item.StartTime</td>
-								<td>@item.EndTime</td>
-								<td>@item.Patient?.FullName</td>
-							</tr>
-						}
+						<tr>
+							<td>@appointment.Start.ToString("ddd dd MMM yy")</td>
+							<td>
+								<span class="badge badge-light-info">@appointment.StartTime</span>
+							</td>
+							<td>
+								<span class="badge badge-light-info">@appointment.EndTime</span>
+							</td>
+							<td>
+								@{
+									DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+									TimeOnly time = TimeOnly.FromDateTime(DateTime.Now);
+									DateTime dt1 = DateTime.Parse(appointment.Start.ToString()).Date;
+									DateTime dt2 = DateTime.Parse(today.ToString()).Date;
+									int result = DateTime.Compare(dt1, dt2);
+									if (result > 0 || (result == 0 && appointment.StartTime.CompareTo(time) >= 0))
+									{
+										<span class="badge badge-light-success">upcomming</span>
+
+									}
+									else
+									{
+										<span class="badge badge-light-danger">previous</span>
+									}
+								}
+							</td>
+							<td class="text-center">
+								<a class="text-gray-800 text-hover-primary fw-bolder mb-1" asp-controller="Patients" asp-action="Details" asp-route-id="@appointment.PatientId">
+									@appointment.Patient?.FullName
+								</a>
+							</td>
+						</tr>
 					}
 				</tbody>
 

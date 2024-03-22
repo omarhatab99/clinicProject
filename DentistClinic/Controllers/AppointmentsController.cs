@@ -306,5 +306,6 @@ namespace DentistClinic.Controllers
             _unitOfWork.appointmentRepository.Cancel(appointment);
             return Ok();
         }
+
     }
 }

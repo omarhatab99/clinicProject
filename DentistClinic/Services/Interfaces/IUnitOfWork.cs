@@ -9,5 +9,7 @@
         public IAnalysisRepository analysisRepository { get; set; }
         public IContactRepository contactRepository { get; set; }
         public IPaymentsRepository paymentsRepository { get; set; }
+        public IMedicalHistoryRepository medicalHistoryRepository { get; set; }
+        public IMedicalHistoryImageRepository medicalHistoryImageRepository { get; set; }
     }
 }

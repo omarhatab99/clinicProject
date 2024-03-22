@@ -16,12 +16,12 @@ namespace DentistClinic.Core.Models
         public double CurentBalance { get; set; } = 0;
         public bool IsDeleted { get; set; } = false;
         public byte[]? ProfilePicture { get; set; }
-        public virtual ICollection<PaymentRecord>? PaymentRecords { get; set; }
-        public virtual ICollection<Appointment>? Appointments { get; set; }
-        public virtual ICollection<ChiefComplainPatient>? ChiefComplainPatients { get; set; }
-        public virtual ICollection<Tplans>? Tplans { get; set; }
-        public virtual ICollection<MedicalHistory>? MedicalHistories { get; set; }
-        public virtual ICollection<Prescription>? Prescriptions { get; set; }
+        public virtual ICollection<PaymentRecord> PaymentRecords { get; set; } = new List<PaymentRecord>();
+        public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public virtual ICollection<ChiefComplainPatient> ChiefComplainPatients { get; set; } = new List<ChiefComplainPatient>();
+        public virtual ICollection<Tplans> Tplans { get; set; } = new List<Tplans>();
+        public virtual ICollection<MedicalHistory> MedicalHistories { get; set; } = new List<MedicalHistory>();
+        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 
     }
 }

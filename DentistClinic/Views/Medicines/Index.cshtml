@@ -1,8 +1,8 @@
-﻿@model IEnumerable<XraysViewModel>
+﻿@model IEnumerable<MedicineViewModel>
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery;
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
 @section Styles {
@@ -24,12 +24,12 @@
 		</div>
 		<!--begin::Content-->
 		<div class="d-flex flex-column pe-0 pe-sm-10">
-			<h5 class="mb-1">Xrays</h5>
+			<h5 class="mb-1">Medicines</h5>
 		</div>
 		<!--end::Content-->
 	</div>
 	<div>
-		<a class="btn btn-sm btn-primary js-render-modal" href="javascript:;" data-url="/Xray/Create" data-title="Add New X-Ray">
+		<a class="btn btn-sm btn-primary js-render-modal" href="javascript:;" data-url="/Medicines/Create" data-title="Add New Medicine">
 			<i class="bi bi-plus-square-dotted"></i>
 			Add
 		</a>
@@ -91,13 +91,13 @@
 						<th>Name</th>
 						<th>Type</th>
 						<th>Status</th>
-						<th class="text-center px-5">Actions</th>
+						<th class="text-center">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var xray in Model)
+					@foreach (var medicine in Model)
 					{
-						<partial name="_Xray" model="xray" />
+						<partial name="_Medicine" model="medicine" />
 					}
 				</tbody>
 			</table>

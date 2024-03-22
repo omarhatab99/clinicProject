@@ -1,4 +1,6 @@
 ﻿using DentistClinic.Core.Models;
+using DentistClinic.Core.ViewModels;
+using DentistClinic.CustomeValidation;
 using DentistClinic.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,57 +15,73 @@ namespace DentistClinic.Controllers
         {
             this._unitOfWork = unitOfWork;
         }
-		[Authorize(Roles = "Doctor")]
+		//[Authorize(Roles = "Doctor")]
 		public IActionResult Index()
 		{
-            var model = _unitOfWork.contactRepository.GetAll();
-            return View(model);
+            List<ContactMsgViewModel> vmodel = _unitOfWork.contactRepository.GetAll().Select(x => new ContactMsgViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Email = x.Email,
+                Phone = x.Phone,
+                Message = x.Message,
+                IsConfirmed = x.IsConfirmed,
+            }).ToList();
+
+            return View(vmodel);
         }
-		[Authorize(Roles = "Doctor")]
-		public IActionResult Confirm(int id)
+		//[Authorize(Roles = "Doctor")]
+		public IActionResult Details(int id)
 		{
-			if (id == 0)
-				return BadRequest();
-			var msg = _unitOfWork.contactRepository.GetById(id);
-			if (msg != null)
+
+			ContactMsg model = _unitOfWork.contactRepository.GetById(id);
+			if(model != null)
 			{
-				msg.IsConfirmed = true;
-				_unitOfWork.contactRepository.Update(msg);
-				return RedirectToAction("Index");
+				model.IsConfirmed = true;
+				_unitOfWork.contactRepository.Update(model);
+
+				ContactMsgViewModel contactMsgViewModel = new ContactMsgViewModel()
+				{
+					Id = model.Id,
+					Name = model.Name,
+					Email = model.Email,
+					Phone = model.Phone,
+					Message = model.Message,
+					IsConfirmed = model.IsConfirmed,
+				};
+				return View(contactMsgViewModel);
 			}
-			return NotFound();
-		}
-		[Authorize(Roles = "Doctor")]
-		public IActionResult UnConfirm(int id)
-		{
-			if (id == 0)
-				return BadRequest();
-			var msg = _unitOfWork.contactRepository.GetById(id);
-			if (msg != null)
+			else
 			{
-				msg.IsConfirmed = false;
-				_unitOfWork.contactRepository.Update(msg);
-				return RedirectToAction("Index");
+				return BadRequest("something is wrong..!!");
 			}
-			return NotFound();
+
 		}
-		[Authorize(Roles = "Doctor")]
+
+		//[Authorize(Roles = "Doctor")]
+		[AjaxOnly]
+		[HttpPost]
 		public IActionResult Delete(int id)
 		{
-			if (id == 0)
-				return BadRequest();
-			var msg = _unitOfWork.contactRepository.GetById(id);
-			if (msg != null)
+			ContactMsg model = _unitOfWork.contactRepository.GetById(id);
+			if (model != null)
 			{
-				_unitOfWork.contactRepository.Delete(msg);
-				return RedirectToAction("Index");
+				_unitOfWork.contactRepository.Delete(model);
+				return Ok();
 			}
-			return NotFound();
+			else
+			{
+				return BadRequest("something is wrong..!!");
+			}
 		}
+
+		[HttpGet]
 		public IActionResult Create()
 		{
 			return View();
 		}
+
+
 		[HttpPost]
 		public IActionResult Create(ContactMsg msg)
 		{
