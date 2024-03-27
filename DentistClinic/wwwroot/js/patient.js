@@ -27,7 +27,7 @@ $(document).ready(function () {
         searchDelay: 500,
         serverSide: true,
         autoWidth: false,
-        processing: true,
+        processing: false,
         stateSave: false,
         order: [[1, 'asc']],
         lengthMenu: [5, 10, 15, 25, 50, 75, 100],
@@ -122,7 +122,7 @@ $(document).ready(function () {
                             <!--end::Menu item-->
                             <!--begin::Menu item-->
                             <div class="menu-item px-3">
-                                <a href="javascript:;" class="menu-link px-3 js-toggle-status" data-kt-users-table-filter="delete_row" data-url="/Patients/ToggleStatus/${row.id}">
+                                <a href="javascript:;" class="menu-link px-3 js-toggle-status-patient" data-kt-users-table-filter="delete_row" data-url="/Patients/ToggleStatus/${row.id}">
                                     Delete
                                 </a>
                             </div>
@@ -242,7 +242,7 @@ $(document).ready(function () {
                         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 py-4" data-kt-menu="true" style="width:200px">
                             <!--begin::Menu item-->
                             <div class="menu-item px-3">
-                                <a href="javascript:;" class="menu-link px-3 js-toggle-status" data-kt-users-table-filter="delete_row" data-url="/Patients/ToggleStatus/${row.id}">
+                                <a href="javascript:;" class="menu-link px-3 js-toggle-status-patient" data-kt-users-table-filter="delete_row" data-url="/Patients/ToggleStatus/${row.id}">
                                     Make it Available
                                 </a>
                             </div>
@@ -279,7 +279,7 @@ $(document).ready(function () {
     });
 
     //hande toggle status
-    $("body").delegate(".js-toggle-status", "click", function () {
+    $("body").delegate(".js-toggle-status-patient", "click", function () {
 
         var toggleBtn = $(this);
         //handl confirmation sweetAlert2
@@ -302,11 +302,11 @@ $(document).ready(function () {
                     cache: false,
                     data: { "__RequestVerificationToken": $("#tokkenForgery").val() },
 
-                    success: function () {
+                    success: function (response) {
                         Swal.fire({
                             position: "center",
                             icon: "success",
-                            title: "Patient has been deleted",
+                            title: response,
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
@@ -670,7 +670,6 @@ function getReservations(patientId) {
             $(".prev-appointments").text(response.patient.previous);
         },
         error: function (response) {
-            console.log(response);
             Swal.fire({
                 text: `${response.responseText}`,
                 icon: "warning",
@@ -704,7 +703,7 @@ $(".appointment-date-filter").flatpickr({
             dataType: "json",
             contentType: "application/json",
             success: function (response) {
-                console.log(response);
+
                 let cartona = ``;
                 Array.from(response.appointments).forEach((appointment) => {
                     if (response.patientReservedAppointments.some((x) => x == appointment.id)) {

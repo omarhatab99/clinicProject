@@ -8,7 +8,7 @@ namespace DentistClinic.CustomeValidation
         {
             if (value == null) return false;
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            if ((DateOnly)value > today) return true;
+            if ((DateOnly)value >= today) return true;
             return false;
         }
     }

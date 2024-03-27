@@ -184,8 +184,15 @@ namespace DentistClinic.Controllers
         public IActionResult GetAvaillableAppointments(int patientId)
         {
             var patient = _unitOfWork.patientRepository.GetById(patientId);
-            var patientReservedAppointments = _unitOfWork.appointmentRepository.UpComming().Where(x => x.PatientId == patient.Id).Select(x => x.Id).ToList();
-            var appointments = _unitOfWork.appointmentRepository.UpComming().Select(x => new
+            var patientReservedAppointments = _unitOfWork.appointmentRepository.UpComming().Where(x => x.PatientId == patient.Id).Select(x => x.Id).ToList();            
+            
+            var appointments = _unitOfWork.appointmentRepository.UpComming().Where(x => {
+
+                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+                int result = DateTime.Compare(DateTime.Parse(today.ToString()), DateTime.Parse(x.Start.ToString()));
+                return result == 0;
+                
+            } ).Select(x => new
             {
                 id = x.Id,
                 title = $"{x.StartTime} to {x.EndTime}",
@@ -208,7 +215,6 @@ namespace DentistClinic.Controllers
                     occupation = patient.Occupation,
                     profilePicture = patient.ProfilePicture,
                     upComming = patientReservedAppointments.Count(),
-                    previous = patientReservedAppointments.Count(),
                 },
                 patientReservedAppointments = patientReservedAppointments,
                 appointments
@@ -236,7 +242,17 @@ namespace DentistClinic.Controllers
 
             var data = new
             {
-                patient = new { id = patient.Id, fullname = patient.FullName, phoneNumber = patient.PhoneNumber, birthDate = patient.BirthDate },
+                patient = new { 
+                    id = patient.Id, 
+                    fullname = patient.FullName, 
+                    phoneNumber = patient.PhoneNumber, 
+                    birthDate = patient.BirthDate,
+                    address = patient.Address,
+                    gender = patient.Gender,
+                    occupation = patient.Occupation,
+                    profilePicture = patient.ProfilePicture,
+                    upComming = patientReservedAppointments.Count(),
+                },
                 patientReservedAppointments = patientReservedAppointments,
                 appointments
             };
@@ -248,6 +264,8 @@ namespace DentistClinic.Controllers
         public IActionResult GetPatientReservation(int patientId)
         {
             var patientReservedAppointments = _unitOfWork.appointmentRepository.UpComming().Where(x => x.PatientId == patientId).ToList();
+            var previousReservedAppointments = _unitOfWork.appointmentRepository.PreviousAppointments().Where(x => x.PatientId == patientId).Select(x => x.Id).ToList();
+
             var appointments = patientReservedAppointments.Select(x => new
             {
                 id = x.Id,
@@ -264,7 +282,7 @@ namespace DentistClinic.Controllers
                 patient = new
                 {
                     upComming = patientReservedAppointments.Count(),
-                    previous = patientReservedAppointments.Count(),
+                    previous = previousReservedAppointments.Count(),
                 },
                 appointments
             };

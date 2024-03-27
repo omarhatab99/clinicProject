@@ -9,6 +9,6 @@
         public virtual Prescription? Prescriptions { get; set; }
         public int AnalysisId { get; set; }
         public virtual Analysis? Analysis { get; set; }
-        public virtual ICollection<AnalysisPrescriptionImage>? AnalysisPrescriptionImages { get; set; }
+        public virtual ICollection<AnalysisPrescriptionImage> AnalysisPrescriptionImages { get; set; } = new List<AnalysisPrescriptionImage>();
     }
 }

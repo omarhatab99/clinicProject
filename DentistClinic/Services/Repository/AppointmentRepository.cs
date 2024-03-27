@@ -23,10 +23,24 @@ namespace DentistClinic.Services.Repository
 
         public IEnumerable<Appointment> PreviousAppointments()
         {
+            List<Appointment> appointments = new List<Appointment>();
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
             TimeOnly time = TimeOnly.FromDateTime(DateTime.Now);
-            return _applicationDbContext.Appointments.Where(a => a.Start < today
-            || (a.Start == today && a.StartTime < time)).ToList();
+
+            foreach (var appointment in _applicationDbContext.Appointments)
+            {
+                DateTime dt1 = DateTime.Parse(appointment.Start.ToString()).Date;
+                DateTime dt2 = DateTime.Parse(today.ToString()).Date;
+                int result = DateTime.Compare(dt1, dt2);
+
+                if (result < 0 || (result == 0 && appointment.StartTime.CompareTo(time) < 0))
+                {
+                    appointments.Add(appointment);
+                }
+            }
+
+            return appointments;
+
         }
 
         public int ReserveTo(Appointment appointment, Patient patient)

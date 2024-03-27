@@ -37,14 +37,15 @@ namespace DentistClinic.Core.ViewModels
         [Display(Name = "Address")]
         public string Address { get; set; } = null!;
         public double CurentBalance { get; set; } = 0;
+        public double GainPayment { get; set; } = 0;
         public Boolean IsDeleted { get; set; } = false;
         public byte[]? ProfilePicture { get; set; }
-        public virtual ICollection<PaymentRecord> PaymentRecords { get; set; } = new List<PaymentRecord>();
+        public virtual List<PaymentViewModel> PaymentRecords { get; set; } = new List<PaymentViewModel>();
         public virtual List<AppointmentViewModel> Appointments { get; set; } = new List<AppointmentViewModel>();       
         public virtual ICollection<ChiefComplainPatient> ChiefComplainPatients { get; set; } = new List<ChiefComplainPatient>();
-        public virtual ICollection<Tplans> Tplans { get; set; } = new List<Tplans>();
+        public virtual List<TreatmentPlansViewModel> Tplans { get; set; } = new List<TreatmentPlansViewModel>();
         public virtual List<MedicalReportViewModel> MedicalHistories { get; set; } = new List<MedicalReportViewModel>();
-        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public virtual List<PrescriptionViewModel> Prescriptions { get; set; } = new List<PrescriptionViewModel>();
         public MedicalReportViewModel? MedicalReportViewModel { get; set; }
     }
 }

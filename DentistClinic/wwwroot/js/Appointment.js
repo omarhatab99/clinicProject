@@ -117,11 +117,10 @@ var KTGeneralFullCalendarSelectDemos = function () {
 
             // Create new event
             select: function (arg) {
-                console.log(arg);
                 const dateSeleted = moment(arg.start).format('YYYY-MM-D');
                 const dateOfDay = moment(new Date()).format('YYYY-MM-D');
 
-                if (new Date(dateSeleted) <= new Date(dateOfDay)) {
+                if (new Date(dateSeleted) < new Date(dateOfDay)) {
                     Swal.fire({
                         text: "appointment can't be in the past ..!!",
                         icon: "warning",

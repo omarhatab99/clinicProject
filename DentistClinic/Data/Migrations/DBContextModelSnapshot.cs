@@ -356,6 +356,7 @@ namespace DentistClinic.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -501,6 +502,28 @@ namespace DentistClinic.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Prescriptiones");
+                });
+
+            modelBuilder.Entity("DentistClinic.Core.Models.Tooth", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TPlanId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TPlanId");
+
+                    b.ToTable("Teeth");
                 });
 
             modelBuilder.Entity("DentistClinic.Core.Models.Tplans", b =>
@@ -872,6 +895,17 @@ namespace DentistClinic.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("DentistClinic.Core.Models.Tooth", b =>
+                {
+                    b.HasOne("DentistClinic.Core.Models.Tplans", "TPlan")
+                        .WithMany("Teeth")
+                        .HasForeignKey("TPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TPlan");
+                });
+
             modelBuilder.Entity("DentistClinic.Core.Models.Tplans", b =>
                 {
                     b.HasOne("DentistClinic.Core.Models.Patient", "Patient")
@@ -1011,6 +1045,11 @@ namespace DentistClinic.Migrations
                     b.Navigation("MedicinePrescriptions");
 
                     b.Navigation("XrayPrescriptions");
+                });
+
+            modelBuilder.Entity("DentistClinic.Core.Models.Tplans", b =>
+                {
+                    b.Navigation("Teeth");
                 });
 
             modelBuilder.Entity("DentistClinic.Core.Models.Xray", b =>

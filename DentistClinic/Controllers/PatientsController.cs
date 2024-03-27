@@ -92,6 +92,17 @@ namespace DentistClinic.Controllers
                 BirthDate = model.BirthDate,
                 Occupation = model.Occupation,
                 ProfilePicture = model.ProfilePicture,
+                ChiefComplainPatients = model.ChiefComplainPatients,
+                Tplans = model.Tplans.Select(x => new TreatmentPlansViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    Notes = x.Notes,
+                    PatientId = x.PatientId,
+                    Teeth = x.Teeth.Select(x => x.Name).ToList(),
+                }).ToList(),
                 Appointments = model.Appointments.Select(x => new AppointmentViewModel
                 {
                     Id = x.Id,
@@ -101,9 +112,16 @@ namespace DentistClinic.Controllers
                     EndTime = x.EndTime,
                     PatientId = (int)x.PatientId!
                 }).ToList(),
-                PaymentRecords = model.PaymentRecords,
-                ChiefComplainPatients = model.ChiefComplainPatients,
-                Tplans = model.Tplans,
+                PaymentRecords = model.PaymentRecords.Select(x => new PaymentViewModel
+                {
+                    Id = x.Id,
+                    Date = x.Date,
+                    Type = x.Type,
+                    Value = x.Value,
+                    Note = x.Note,
+                    PatientId = x.Id
+
+                }).ToList(),
                 MedicalHistories = model.MedicalHistories.Select(x => new MedicalReportViewModel
                 {
                     Id = x.Id,
@@ -114,9 +132,34 @@ namespace DentistClinic.Controllers
                     Documentations = x.MedicalHistoryImages.Select(x => x.Image).ToList(),
                     PatientId = x.PatientId
                 }).ToList(),
-                Prescriptions = model.Prescriptions,
+                Prescriptions = model.Prescriptions.Select(x => new PrescriptionViewModel
+                {
+                    Id = x.Id,
+                    Date = x.Date,
+                    Notes = x.Notes,
+                    patient = x.Patient!,
+
+                }).ToList(),
                 CurentBalance = model.CurentBalance
             };
+
+            List<PaymentRecord> payments = _unitOfWork.paymentsRepository.GetByPatientId(id);
+
+            if(payments.Count() > 0)
+            {
+                double gainPayments = 0;
+                foreach (var payment in payments)
+                {
+                    if(payment.Type == "Pay")
+                    {
+                        gainPayments += payment.Value;
+                    }
+                }
+
+                gainPayments = gainPayments * -1;
+                vmodel.GainPayment = gainPayments;
+            }
+
 
             return View(vmodel);
         }
@@ -134,7 +177,16 @@ namespace DentistClinic.Controllers
 
                 _unitOfWork.patientRepository.Update(patient);
 
-                return Ok();
+                if (patient.IsDeleted)
+                {
+                    return Ok("Patient Has been Deleted");
+                }
+                else
+                {
+                    return Ok("Patient Has been Restored");
+                }
+
+               
             }
             else
             {
@@ -285,5 +337,6 @@ namespace DentistClinic.Controllers
             return Ok(jsonData);
 
         }
+
     }
 }

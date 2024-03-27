@@ -26,6 +26,7 @@ namespace DentistClinic.Data.Context
         public virtual DbSet<AnalysisPrescriptionImage> AnalysisPrescriptionImages { get; set; }
         public virtual DbSet<XrayPrescriptionImage> XrayPrescriptionImages { get; set; }
         public virtual DbSet<ContactMsg> ContactMsgs { get; set; }
+        public virtual DbSet<Tooth> Teeth { get; set; }
 
         public ApplicationDbContext()
         {
@@ -37,6 +38,7 @@ namespace DentistClinic.Data.Context
         {
             base.OnModelCreating(modelBuilder);
             new PatientEntityTypeConfiguration().Configure(modelBuilder.Entity<Patient>());
+            new TPlansEntityTypeConfiguration().Configure(modelBuilder.Entity<Tplans>());
 
         }
 

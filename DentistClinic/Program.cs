@@ -6,6 +6,7 @@ using DentistClinic.Core.Models;
 using DentistClinic.Data.Context;
 using DentistClinic.Services.Interfaces;
 using DentistClinic.Services.Repository;
+using DentistClinic.Core.ViewModels;
 
 namespace DentistClinic
 {
@@ -60,6 +61,12 @@ namespace DentistClinic
             builder.Services.AddScoped<IPaymentsRepository, PaymentsRepository>();
             builder.Services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
             builder.Services.AddScoped<IMedicalHistoryImageRepository, MedicalHistoryImageRepository>();
+            builder.Services.AddScoped<ITreatmentPlansRepository, TreatmentPlansRepository>();
+            builder.Services.AddScoped<IToothRepository, ToothRepository>();
+            builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+            builder.Services.AddScoped<IMedicinePrescriptionRepository, MedicinePrescriptionRepository>();
+            builder.Services.AddScoped<IAnalysisPrescriptionRepository, AnalysisPrescriptionRepository>();
+            builder.Services.AddScoped<IXraysPrescriptionRepository, XraysPrescriptionRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 

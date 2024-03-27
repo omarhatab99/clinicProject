@@ -191,3 +191,18 @@ body {
 }
 
 /*end custom lightbox*/
+/*Timeline-icon*/
+.timeline .timeline-icon {
+    z-index: 1;
+    flex-shrink: 0;
+    margin-left: -20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--bs-gray-300);
+    border-radius: 50%;
+    border-style: dashed;
+}
