@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 using System.Reflection.Metadata;
 using DentistClinic.Core.Constants;
 using System.Net.Mail;
-using DentistClinic.Core.Models;
+
 
 
 namespace DentistClinic.Areas.Identity.Pages.Account
@@ -80,11 +80,13 @@ namespace DentistClinic.Areas.Identity.Pages.Account
             [Required]
             [StringLength(20, ErrorMessage = Errors.usernameLengthMSG, MinimumLength = 3)]
             [Display(Name = "First Name")]
+            [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Name must be letters only")]
             public string FirstName { get; set; }
 
             [Required]
             [StringLength(20, ErrorMessage = Errors.usernameLengthMSG, MinimumLength = 3)]
             [Display(Name = "Last Name")]
+            [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Name must be letters only")]
             public string LastName { get; set; }
 
             [Required]
@@ -142,12 +144,18 @@ namespace DentistClinic.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                //var user = CreateUser();
+                
+                    if (Input.Birthdate > DateTime.Now)
+                    {
+                        ModelState.AddModelError(string.Empty, "Birth date cannot be in the future.");
+                        return Page();
+                    }
+                    //var user = CreateUser();
 
-                //await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                //await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                    //await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                    //await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-                ApplicationUser applicationUser = new ApplicationUser
+                    ApplicationUser applicationUser = new ApplicationUser
                 {
                     UserName = new MailAddress(Input.Email).User,
                     Email = Input.Email,

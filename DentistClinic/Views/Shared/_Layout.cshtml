@@ -1,46 +1,10 @@
 ﻿
-@* <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css">
-    <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
-    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css">
-    <link rel="stylesheet" href="~/lib/flatpickr/flatpickr.min.css">
-    <link rel="stylesheet" href="~/css/themeStyle.css">
-</head>
-<body>
 
-       <div class="main-wrapper">
-            <!--Header Partial View-->
-            <partial name="_Header" />
-            <!--Sidebar Partial View-->
-            <partial name="_Sidebar" />
-            <!--Render Body Here-->
-            <div class="page-wrapper">
-                @RenderBody()
-
-            </div>
-       </div>
-    <div class="sidebar-overlay" data-reff></div>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.js"></script>
-    <script src="~/lib/select2/js/select2.min.js"></script>
-    <script src="~/lib/flatpickr/flatpickr.min.js"></script>
-    <script src="~/lib/moment.js/moment.min.js"></script>
-    <script src="~/js/themeJs.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html> *@
-
-    @inject SignInManager<ApplicationUser> SignInManager;
-
+@inject SignInManager<ApplicationUser> SignInManager;
+@inject UserManager<ApplicationUser> userManger;
+@{
+    var applicationUser = await userManger.GetUserAsync(User) ?? new ApplicationUser();
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,29 +38,58 @@
     <div class="d-flex flex-column flex-root">
         <!--begin::Page-->
         <div class="page d-flex flex-row flex-column-fluid">
-            <!--begin::Wrapper-->
-            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
-                <!--begin::Header-->
-                <partial name="_Header" />
-                <!--end::Header-->
-                <!--begin::Content wrapper-->
-                <div class="d-flex flex-column-fluid">
-                    <!--begin::Aside-->
-                    <partial name="_Sidebar" />
-                    <!--end::Aside-->
-                    <!--begin::Container-->
-                    <div class="d-flex flex-column flex-column-fluid container-fluid">
-                        <div class="content flex-column-fluid" id="kt_content">
+            @if (await userManger.IsInRoleAsync(applicationUser, "User") == false)
+            {
+                <!--begin::Wrapper-->
+                <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                    <!--begin::Header-->
+                    <partial name="_Header" />
+                    <!--end::Header-->
+                    <!--begin::Content wrapper-->
+                    <div class="d-flex flex-column-fluid">
+                        <!--end::Heading-->
+                        <!--begin::Aside-->
+                        <partial name="_Sidebar" />
+                        <!--end::Aside-->
+                        <!--begin::Container-->
+                        <div class="d-flex flex-column flex-column-fluid container-fluid">
+                            <div class="content flex-column-fluid" id="kt_content">
 
-                            @RenderBody()
+                                @RenderBody()
 
+                            </div>
                         </div>
+                        <!--end::Container-->
                     </div>
-                    <!--end::Container-->
+                    <!--end::Content wrapper-->
                 </div>
-                <!--end::Content wrapper-->
-            </div>
-            <!--end::Wrapper-->
+                <!--end::Wrapper-->
+            }
+            else
+            {
+                <!--begin::Wrapper-->
+                <div class="wrapper d-flex flex-column flex-row-fluid px-0" id="kt_wrapper">
+                    <!--begin::Header-->
+                    <partial name="_Header" />
+                    <!--end::Header-->
+                    <!--begin::Content wrapper-->
+                    <div class="d-flex flex-column-fluid">
+                        <!--end::Heading-->
+                        <!--begin::Container-->
+                        <div class="d-flex flex-column flex-column-fluid container-fluid">
+                            <div class="content flex-column-fluid" id="kt_content">
+
+                                @RenderBody()
+
+                            </div>
+                        </div>
+                        <!--end::Container-->
+                    </div>
+                    <!--end::Content wrapper-->
+                </div>
+                <!--end::Wrapper-->
+            }
+
         </div>
         <!--end::Page-->
     </div>

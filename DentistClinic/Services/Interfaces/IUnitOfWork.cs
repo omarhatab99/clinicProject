@@ -11,5 +11,11 @@
         public IPaymentsRepository paymentsRepository { get; set; }
         public IMedicalHistoryRepository medicalHistoryRepository { get; set; }
         public IMedicalHistoryImageRepository medicalHistoryImageRepository { get; set; }
+        public ITreatmentPlansRepository treatmentPlansRepository { get; set; }
+        public IToothRepository toothRepository { get; set; }
+        public IPrescriptionRepository prescriptionRepository { get; set; }
+        public IMedicinePrescriptionRepository medicinePrescriptionRepository { get; set; }
+        public IAnalysisPrescriptionRepository analysisPrescriptionRepository { get; set; }
+        public IXraysPrescriptionRepository xraysPrescriptionRepository { get; set; }
     }
 }

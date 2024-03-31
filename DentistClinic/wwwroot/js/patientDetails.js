@@ -1,134 +1,8 @@
-﻿//constants
-let documentations = [];
-let updatedRaw = undefined;
-
+﻿
 //document ready
 $(document).ready(function () {
 
 
-
-    let paymentForm = document.getElementById("paymentForm");
-    
-    $('.js-add-payment').unbind().bind('click', function (event) {
-
-        event.preventDefault();
-
-        let modal = $("#paymentRecords");
-
-        if (!paymentForm.payment_date.value || !paymentForm.payment_type.value || !paymentForm.payment_value.value) {
-            Swal.fire({
-                text: `some fields must be required ..!!`,
-                icon: "warning",
-                buttonsStyling: false,
-                confirmButtonText: "Ok, got it!",
-                customClass: {
-                    confirmButton: "btn btn-primary",
-                }
-            });
-        }
-        else {
-            //create object from payment and send it to ajax data
-            const paymentObject = new Object();
-            paymentObject.date = paymentForm.payment_date.value;
-            paymentObject.type = paymentForm.payment_type.value;
-            paymentObject.value= paymentForm.payment_value.value;
-            paymentObject.note = paymentForm.payment_note.value;
-
-            $.post({
-
-                url: "/Payments/Create",
-                cache: false,
-                data: {
-
-                    "date": paymentObject.date,
-                    "type": paymentObject.type,
-                    "value": paymentObject.value,
-                    "note": paymentObject.note,
-                    "__RequestVerificationToken": $("#tokkenForgery").val(),
-
-                },
-
-                success: function (response) {
-                    Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Reservation has been Cancelled",
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        var itemObj = $(response);
-                        $(".js-datatables").DataTable().row.add(itemObj).draw();
-                        modal.modal("hide");
-                    });
-                },
-                error: function (response) {
-                    Swal.fire({
-                        text: `${response.responseText}`,
-                        icon: "warning",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary",
-                        }
-                    });
-                }
-            });
-        }
-        
-
-
-    });
-
-    //handle bootstrap modal
-    $("body").delegate(".js-report-modal", "click", function () {
-
-        let renderBtn = $(this);
-
-        let modal = $("#Modal");
-
-        //set modal title
-        modal.find("#ModalLabel").text(renderBtn.data("title"));
-
-        if (renderBtn.data("update") !== undefined) {
-            updatedRaw = renderBtn.closest(".medical-report");
-        }
-
-        //set modal body (ajax call)
-        $.get({
-
-            url: renderBtn.data("url"),
-            success: function (result) {
-
-                modal.find(".modal-body").html(result);
-
-                $.validator.unobtrusive.parse(modal);
-
-                //handle flatepicker
-                $(".report-sdate").flatpickr({
-                    altInput: true,
-                    altFormat: "F j, Y",
-                    maxDate: "today"
-                });
-                $(".report-edate").flatpickr({
-                    altInput: true,
-                    altFormat: "F j, Y",
-                    maxDate:"today"
-                });
-
-                uploaddocumentationsDragAndDrop();
-                //show modal
-                modal.modal("show");
-            },
-            error: function () {
-                console.log("Error");
-            }
-
-        });
-
-
-    });
-
-    //hande toggle status
     $("body").delegate(".js-delete-report", "click", function () {
 
         var deleteBtn = $(this);
@@ -182,206 +56,573 @@ $(document).ready(function () {
 
     });
 
-    customLightBox();
+    $("body").delegate(".js-delete-plan", "click", function () {
+        var deleteBtn = $(this);
+
+        //handl confirmation sweetAlert2
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "you sure want delete this plan?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, iam sure!',
+            customClass: {
+                confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary",
+                cancelButton: "btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger",
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                //call ajax
+                $.post({
+
+                    url: deleteBtn.data("url"),
+                    cache: false,
+                    data: { "__RequestVerificationToken": $("#tokkenForgery").val() },
+
+                    success: function () {
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Medical Report has been deleted",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+
+                            deleteBtn.closest(".plan-row").remove();
+                            //remove it from datatable
+                        });
+                    },
+                    error: function (response) {
+                        Swal.fire({
+                            text: `${response.responseText}`,
+                            icon: "warning",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary",
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+
+
+    //Create new Prescription
+    $(".js-create-prescription").on("click", function () {
+
+
+        let createPrescriptionBtn = $(this); 
+
+
+        //call ajax
+        $.post({
+
+            url: createPrescriptionBtn.data("url"),
+            cache: false,
+            data: { "__RequestVerificationToken": $("#tokkenForgery").val() },
+
+            success: function (response) {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Prescription has been created",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+
+                    $(".prescription-container").prepend(response);
+
+                    KTMenu.init();
+                    KTMenu.initHandlers();
+                });
+            },
+            error: function (response) {
+                Swal.fire({
+                    text: `${response.responseText}`,
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok, got it!",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    }
+                });
+            }
+        });
+
+
+    });
+    $(".js-delete-prescription").on("click", function () {
+        var deleteBtn = $(this);
+
+        //handl confirmation sweetAlert2
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "you sure want delete this prescription?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, iam sure!',
+            customClass: {
+                confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary",
+                cancelButton: "btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger",
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                //call ajax
+                $.post({
+
+                    url: deleteBtn.data("url"),
+                    cache: false,
+                    data: { "__RequestVerificationToken": $("#tokkenForgery").val() },
+
+                    success: function () {
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Prescription has been deleted",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+
+                            deleteBtn.closest(".prescription-box").remove();
+                            //remove it from datatable
+                        });
+                    },
+                    error: function (response) {
+                        Swal.fire({
+                            text: `${response.responseText}`,
+                            icon: "warning",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary",
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+
+    $("body").delegate(".js-show-prescription", "click", function () {
+
+        var deleteBtn = $(this);
+        //handl confirmation sweetAlert2
+        $.post({
+
+            url: deleteBtn.data("url"),
+            cache: false,
+            data: { "__RequestVerificationToken": $("#tokkenForgery").val() },
+
+            success: function (response) {
+                window.location.href = response.redirectToUrl;
+            },
+            error: function (response) {
+                Swal.fire({
+                    text: `${response.responseText}`,
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok, got it!",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    }
+                });
+            }
+        });
+
+    });
+
+
+    //appoinemts
+    $("body").delegate(".js-reserve-appointment", "click", function (event) {
+        event.preventDefault();
+        let patientId = $(event.target).attr("data-id");
+
+        let modal = $("#reserveAppointment");
+
+        $.get({
+
+            url: "/Appointments/GetAvaillableAppointments",
+            data: { patientId: patientId },
+            cache: false,
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                let cartona = ``;
+                Array.from(response.appointments).forEach((appointment) => {
+                    if (response.patientReservedAppointments.some((x) => x == appointment.id)) {
+                        cartona += `
+                            <div class="appointment-box-date m-2" data-id=${appointment.id} data-reserved=true style="cursor:pointer; border:2px dashed #F00; width:170px;border-radius:8px; padding: 10px; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+                                <div class="date-header d-flex justify-content-between align-items-center py-3">
+                                    <span>${moment(appointment.start).format('ll')}</span>
+                                    <span class="badge badge-light-info appointment-status">reserved</span>
+                                </div>
+                                <div class="date-footer d-flex justify-content-between align-items-center">
+                                    <span class="appointment-start">${appointment.appointmentStart.substring(0, 5)} PM</span>
+                                    <span class="fw-semibold text-muted">To</span>
+                                    <span class="appointment-end">${appointment.appointmentEnd.substring(0, 5)} PM</span>
+                                </div>
+                                <button class="btn btn-link btn-color-danger btn-active-color-danger js-cancel-appointment">Cancel</button>
+                            </div>
+                    
+                        `
+                    }
+                    else {
+                        cartona += `
+                            <div class="appointment-box-date m-2" data-id=${appointment.id} data-reserved=false style="cursor:pointer; width:170px;border-radius:8px; padding: 10px; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+                                <div class="date-header d-flex justify-content-between align-items-center py-3">
+                                    <span>${moment(appointment.start).format('ll')}</span>
+                                    <span class="badge badge-light-success appointment-status">available</span>
+                                </div>
+                                <div class="date-footer d-flex justify-content-between align-items-center">
+                                    <span class="appointment-start">${appointment.appointmentStart.substring(0, 5)} PM</span>
+                                    <span class="fw-semibold text-muted">To</span>
+                                    <span class="appointment-end">${appointment.appointmentEnd.substring(0, 5)} PM</span>
+                                </div>
+                                <button class="btn btn-link btn-color-info btn-active-color-primary js-select-appointment">Select</button>
+                            </div>
+                    
+                        `
+                    }
+
+
+                });
+                $(".appointment-box").html(``);
+                $(".appointment-box").html(cartona);
+                $(".js-reserve-appointment-patient").attr("data-patient", patientId);
+                $(".js-reserve-appointment-patient").attr("data-appointment", "");
+
+                //hadle personal data
+                $(".patient-name").text(response.patient.fullName);
+                $(".patient-phone").text(response.patient.phoneNumber);
+                $(".patient-image").attr("src", response.profilePicture != null ? `data:image /*;base64,@(Convert.ToBase64String(${response.profilePicture}))` : "/assets/images/user.jpg");
+
+
+                getReservations(patientId);
+                modal.modal("show");
+            },
+            error: function (response) {
+                console.log(response);
+                Swal.fire({
+                    text: `${response.responseText}`,
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok, got it!",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    }
+                });
+            }
+
+
+        });
+
+
+
+
+
+    });
+
+    let selectedAppointment;
+    $("body").delegate(".js-select-appointment", "click", function (event) {
+        let selectBtn = $(this);
+
+        let appointmentId = selectBtn.parent(".appointment-box-date").attr("data-id");
+        $(".appointment-box-date").each((index, appointmentDate) => {
+            if ($(appointmentDate).attr("data-reserved") == "false") {
+                $(appointmentDate).css("border", "none")
+            }
+
+        });
+
+        selectBtn.parent(".appointment-box-date").css("border", "1px dashed #080");
+        $(".js-reserve-appointment-patient").attr("data-appointment", appointmentId);
+        selectedAppointment = selectBtn.parent(".appointment-box-date");
+    });
+
+    $("body").delegate(".js-cancel-appointment", "click", function (event) {
+        let cancelBtn = $(this);
+        let appointmentId = $(cancelBtn).parent(".appointment-box-date").attr("data-id");
+        let patientId = $(".js-reserve-appointment-patient").attr("data-patient");
+        console.log(appointmentId);
+        //handl confirmation sweetAlert2
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "are you sure cancel this appointment for this patient",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, iam sure!',
+            customClass: {
+                confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary",
+                cancelButton: "btn btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger",
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                //call ajax
+                $.post({
+
+                    url: "/Appointments/CancelAppointment",
+                    cache: false,
+                    data: { "__RequestVerificationToken": $("#tokkenForgery").val(), appointmentId },
+
+                    success: function () {
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Reservation has been Cancelled",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            //
+                            let appointmentBox = cancelBtn.parent(".appointment-box-date");
+                            console.log(appointmentBox);
+                            appointmentBox.find("button").removeClass("js-cancel-appointment")
+                                .addClass("js-select-appointment");
+                            console.log(appointmentBox.find("button"));
+                            appointmentBox.find("button").removeClass("btn-color-danger btn-active-color-danger")
+                                .addClass("btn-color-primay btn-active-color-primary");
+                            appointmentBox.find("button").text("Select");
+                            appointmentBox.find(".appointment-status").text("available");
+                            appointmentBox.find(".appointment-status").addClass("badge-light-success")
+                                .removeClass("badge-light-info");
+                            appointmentBox.attr("data-reserved", false);
+                            appointmentBox.css("border", "none");
+
+                            getReservations(patientId);
+                        });
+                    },
+                    error: function (response) {
+                        Swal.fire({
+                            text: `${response.responseText}`,
+                            icon: "warning",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary",
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+
+    $("body").delegate(".js-reserve-appointment-patient", "click", function (event) {
+
+
+        let appointmentId = $(".js-reserve-appointment-patient").attr("data-appointment");
+        let patientId = $(".js-reserve-appointment-patient").attr("data-patient");
+
+        console.log(appointmentId, patientId);
+
+        if (appointmentId && patientId) {
+            $(".js-reserve-appointment-patient").attr("disabled", "disabled").attr("data-kt-indicator", "on");
+            $.post({
+
+                url: "/Appointments/ReserveAppointment",
+                cache: false,
+                data: { "__RequestVerificationToken": $("#tokkenForgery").val(), appointmentId, patientId },
+
+                success: function () {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Reservation is Done",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        selectedAppointment.find("button").removeClass("js-select-appointment")
+                            .addClass("js-cancel-appointment");
+                        selectedAppointment.find("button").addClass("btn-color-danger btn-active-color-danger")
+                            .removeClass("btn-color-primay btn-active-color-primary");
+                        selectedAppointment.find("button").text("Cancel");
+                        selectedAppointment.find(".appointment-status").text("reserved");
+                        selectedAppointment.find(".appointment-status").removeClass("badge-light-success")
+                            .addClass("badge-light-info");
+                        selectedAppointment.attr("data-reserved", true);
+                        selectedAppointment.css("border", "2px dashed #F00");
+
+                        getReservations(patientId);
+                        $(".js-reserve-appointment-patient").removeAttr("disabled").removeAttr("data-kt-indicator");
+                    })
+                },
+                error: function (response) {
+                    Swal.fire({
+                        text: `${response.responseText}`,
+                        icon: "warning",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                        }
+                    }).then(() => {
+                        $(".js-reserve-appointment-patient").removeAttr("disabled").removeAttr("data-kt-indicator");
+                    })
+                }
+            });
+        }
+        else {
+            Swal.fire({
+                text: `no appointment selected..!!`,
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                }
+            });
+        }
+
+    });
 
 
 
 });
 
 
-//datatables
 
-//functionalites
-const uploaddocumentationsDragAndDrop = () => {
-    const browse = document.querySelector(".select");
-    const input = document.querySelector(".form-upload input");
 
-    browse.addEventListener("click", () => { //to make input open from browse text
 
-        input.click();
+function disableBtnSubmit() {
+    $("body :submit").attr("disabled", "disabled").attr("data-kt-indicator", "on");
+}
+
+function getReservations(patientId) {
+    $.get({
+
+        url: "/Appointments/GetPatientReservation",
+        data: { patientId },
+        cache: false,
+        dataType: "json",
+        contentType: "application/json",
+        success: function (response) {
+            console.log(response);
+            let cartona = ``;
+            Array.from(response.appointments).forEach((appointment) => {
+                cartona += `
+                            <div class="appointment-box-date m-2" data-id=${appointment.id} data-reserved=true style="cursor:pointer; width:160px;border-radius:8px; padding: 10px; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+                                <div class="date-header d-flex justify-content-between align-items-center py-3">
+                                    <span>${moment(appointment.start).format('ll')}</span>
+                                </div>
+                                <div class="date-footer d-flex justify-content-between align-items-center">
+                                    <span class="appointment-start">${appointment.appointmentStart.substring(0, 5)} PM</span>
+                                    <span class="fw-semibold text-muted">To</span>
+                                    <span class="appointment-end">${appointment.appointmentEnd.substring(0, 5)} PM</span>
+                                </div>
+                            </div>
+
+                  
+                        `
+            });
+
+
+            $(".reservedAppointments-list").html(``);
+            $(".reservedAppointments-list").html(cartona);
+            $(".upcoming-appointments").text(response.patient.upComming);
+            $(".prev-appointments").text(response.patient.previous);
+        },
+        error: function (response) {
+            Swal.fire({
+                text: `${response.responseText}`,
+                icon: "warning",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                }
+            });
+        }
+
 
     });
+}
 
 
-    //input change event
-    input.addEventListener("change", () => {
+$(".appointment-date-filter").flatpickr({
+    altInput: true,
+    altFormat: "F j, Y",
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    maxDate: new Date().fp_incr(14),
+    defaultDate: "today",
+    onChange: function (selectedDates, dateStr, instance) {
+        let patientId = $(".js-reserve-appointment-patient").attr("data-patient");
+        $.get({
 
-        documentations = [];
-        const imgs = Array.from(input.files);
+            url: "/Appointments/GetAvaillableAppointmentsByDate",
+            data: { dateStr, patientId },
+            cache: false,
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
 
-        imgs.forEach((img) => { //add documentations from input in documentations array after chcek no consistency and length no more 5
+                let cartona = ``;
+                Array.from(response.appointments).forEach((appointment) => {
+                    if (response.patientReservedAppointments.some((x) => x == appointment.id)) {
+                        cartona += `
+                            <div class="appointment-box-date m-2" data-id=${appointment.id} data-reserved=true style="cursor:pointer; border:2px dashed #F00; width:170px;border-radius:8px; padding: 10px; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+                                <div class="date-header d-flex justify-content-between align-items-center py-3">
+                                    <span>${moment(appointment.start).format('ll')}</span>
+                                    <span class="badge badge-light-info appointment-status">reserved</span>
+                                </div>
+                                <div class="date-footer d-flex justify-content-between align-items-center">
+                                    <span class="appointment-start">${appointment.appointmentStart.substring(0, 5)} PM</span>
+                                    <span class="fw-semibold text-muted">To</span>
+                                    <span class="appointment-end">${appointment.appointmentEnd.substring(0, 5)} PM</span>
+                                </div>
+                                <button class="btn btn-link btn-color-danger btn-active-color-danger js-cancel-appointment">Cancel</button>
+                            </div>
+                  
+                        `
+                    }
+                    else {
+                        cartona += `
+                            <div class="appointment-box-date m-2" data-id=${appointment.id} data-reserved=false style="cursor:pointer; width:170px;border-radius:8px; padding: 10px; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+                                <div class="date-header d-flex justify-content-between align-items-center py-3">
+                                    <span>${moment(appointment.start).format('ll')}</span>
+                                    <span class="badge badge-light-success appointment-status">available</span>
+                                </div>
+                                <div class="date-footer d-flex justify-content-between align-items-center">
+                                    <span class="appointment-start">${appointment.appointmentStart.substring(0, 5)} PM</span>
+                                    <span class="fw-semibold text-muted">To</span>
+                                    <span class="appointment-end">${appointment.appointmentEnd.substring(0, 5)} PM</span>
+                                </div>
+                                <button class="btn btn-link btn-color-info btn-active-color-primary js-select-appointment">Select</button>
+                            </div>
+                  
+                        `
+                    }
 
-            if (documentations.every((e) => { return e.name !== img.name })) {
-                documentations.push(img);
+
+                });
+
+
+                $(".appointment-box").html(``);
+                $(".appointment-box").html(cartona);
+                $(".js-reserve-appointment-patient").attr("data-patient", patientId);
+                $(".js-reserve-appointment-patient").attr("data-appointment", "");
+
+            },
+            error: function (response) {
+                console.log(response);
+                Swal.fire({
+                    text: `${response.responseText}`,
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok, got it!",
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                    }
+                });
             }
 
 
         });
-        showdocumentations(documentations); //display in image container
-
-    });
-
-
-    //display selected documentations in container
-    const showdocumentations = (documentations) => {
-        let cartona = "";
-
-        documentations.forEach((img, index) => {
-
-            cartona +=
-                `
-            <div class="image" style="margin-right:5px">
-                <img src=${URL.createObjectURL(img)} alt="image">
-                <span class="deleteImg" data-index=${index}>&times;</span>
-            </div>
-            `
-
-        });
-
-        document.querySelector(".image-container").innerHTML = cartona;
     }
-
-
-    document.addEventListener("click", (event) => {
-        if (event.target.classList.contains("deleteImg")) {
-            removeFileFromFileList(event.target.dataset.index, 1);
-            documentations = [];
-            const imgs = Array.from(input.files);
-
-            imgs.forEach((img) => { //add documentations from input in documentations array after chcek no consistency and length no more 5
-
-                if (documentations.every((e) => { return e.name !== img.name })) {
-                    documentations.push(img);
-                }
-
-
-            });
-            showdocumentations(documentations); //display in image container
-        }
-    });
-
-
-    function removeFileFromFileList(index) {
-        const dt = new DataTransfer()
-        const { files } = input
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i]
-            if (parseInt(index) !== i)
-                dt.items.add(file) // here you exclude the file. thus removing it.
-        }
-
-        input.files = dt.files // Assign the updates list
-    }
-
-}
-function customLightBox() {
-    //handle lightcustom
-    let imgIndex = 0;
-    let documentationList = [];
-    $("body").delegate(".gallery-img-link", "click", function (event) {
-        event.preventDefault();
-        var card = $(this).data("card");
-        documentationList = $(`.documentation-img.${card}`);
-
-        imgIndex = $(this).data("index");
-        $(".image-center").attr("src", documentationList[imgIndex].src);
-
-        $(".lightBox-overlay").removeClass("d-none");
-        $(".lightBox-overlay").addClass("d-flex");
-        $(".lightBox-overlay").css("z-index", 1000000000);
-    });
-
-    $("body").delegate(".lightBox-overlay", "click", function () {
-
-        $(".lightBox-overlay").removeClass("d-flex");
-        $(".lightBox-overlay").addClass("d-none");
-
-    });
-
-    $("body").delegate(".lightbox-arrow-left", "click", function (event) {
-
-        event.stopPropagation();
-        imgIndex--;
-        if (imgIndex < 0) {
-            imgIndex = documentationList.length - 1;
-            $(".image-center").attr("src", documentationList[imgIndex].src);
-        }
-        else {
-            $(".image-center").attr("src", documentationList[imgIndex].src);
-        }
-
-    });
-
-    $("body").delegate(".lightbox-arrow-right", "click", function (event) {
-
-        event.stopPropagation();
-
-        imgIndex++;
-
-        if (imgIndex > (documentationList.length - 1)) {
-            imgIndex = 0;
-            $(".image-center").attr("src", documentationList[imgIndex].src);
-        }
-        else {
-            $(".image-center").attr("src", documentationList[imgIndex].src);
-        }
-
-    });
-}
-function disableBtnSubmit() {
-    $("body :submit").attr("disabled", "disabled").attr("data-kt-indicator", "on");
-}
-function onRequestBegin() {
-    disableBtnSubmit();
-};
-function onRequestSuccess(response) {
-    let modal = $("#Modal");
-    modal.modal("hide");
-
-    Swal.fire({
-        position: "center",
-        icon: "success",
-        title: response.message,
-        showConfirmButton: false,
-        timer: 1500
-    }).then(() => {
-        var itemObj = $(response);
-
-        if (updatedRaw != undefined) { //update
-            $(updatedRaw).after(itemObj);
-            updatedRaw.remove();
-        }
-        else {//create
-            $(".reports-container").append(itemObj);
-        }
-
-        KTMenu.init();
-        KTMenu.initHandlers();
-        customLightBox();
-    });
-    
-}
-function onRequestFailure(response) {
-    Swal.fire({
-        text: `${response.responseText}`,
-        icon: "warning",
-        buttonsStyling: false,
-        confirmButtonText: "Ok, got it!",
-        customClass: {
-            confirmButton: "btn btn-primary",
-        }
-    });
-}
-function onRequestComplete() {
-    $("body :submit").removeAttr("disabled").removeAttr("data-kt-indicator");
-};
-
-//libraries handling
-$(".payment-date").flatpickr({
-    altInput: true,
-    altFormat: "F j, Y",
-    defaultDate: "today",
 });
 
 

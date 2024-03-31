@@ -67,7 +67,8 @@ namespace DentistClinic.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [Display(Name = "Email or Mobile Number")]
+            [Display(Name = "Email")]
+            [EmailAddress]
             public string Email { get; set; }
 
             /// <summary>
@@ -109,9 +110,11 @@ namespace DentistClinic.Areas.Identity.Pages.Account
            
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            string username = new EmailAddressAttribute().IsValid(Input.Email) ?
-                userManager.FindByEmailAsync(Input.Email)?.Result?.UserName :
-                userManager.Users.FirstOrDefault(x => x.PhoneNumber == Input.Email)?.UserName;
+            Input.Email = Input.Email ?? String.Empty;
+
+            string username = userManager.FindByEmailAsync(Input.Email)?.Result?.UserName;
+
+
 
             username = username ?? String.Empty;
 

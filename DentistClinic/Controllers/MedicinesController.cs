@@ -2,11 +2,13 @@
 using DentistClinic.Core.ViewModels;
 using DentistClinic.CustomeValidation;
 using DentistClinic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentistClinic.Controllers
 {
-	public class MedicinesController : Controller
+    [Authorize(Roles = "Doctor")]
+    public class MedicinesController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
 

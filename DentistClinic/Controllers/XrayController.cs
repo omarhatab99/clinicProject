@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace DentistClinic.Controllers
 {
-    //[Authorize(Roles = "Doctor")]
+    [Authorize(Roles = "Doctor")]
     public class XrayController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

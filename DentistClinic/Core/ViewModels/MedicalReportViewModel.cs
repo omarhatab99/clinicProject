@@ -14,7 +14,7 @@ namespace DentistClinic.Core.ViewModels
         [Display(Name = "Date of Recovered")]
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
-        public virtual List<IFormFile> MedicalHistoryImages { get; set; } = new List<IFormFile>();
+        public  List<IFormFile> MedicalHistoryImages { get; set; } = new List<IFormFile>();
         public List<byte[]> Documentations { get; set; } = new List<byte[]>();
         public int PatientId { get; set; }
     }

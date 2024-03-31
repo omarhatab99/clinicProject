@@ -11,10 +11,12 @@ namespace DentistClinic.Core.ViewModels
         [Required]
         [StringLength(20, ErrorMessage = Errors.usernameLengthMSG, MinimumLength = 3)]
         [Display(Name = "First Name")]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Name must be letters only")]
         public string FirstName { get; set; } = null!;
         [Required]
         [StringLength(20, ErrorMessage = Errors.usernameLengthMSG, MinimumLength = 3)]
         [Display(Name = "Last Name")]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Name must be letters only")]
         public string LastName { get; set; } = null!;
         public string? FullName { get; set; }
 
@@ -28,7 +30,7 @@ namespace DentistClinic.Core.ViewModels
         public string Gender { get; set; } = null!;
         [Required]
         [Display(Name = "Birth Date")]
-        public DateTime BirthDate { get; set; } = DateTime.Now;
+        public DateTime BirthDate { get; set; } = new DateTime(2010, 1, 1);
         [Required]
         [Display(Name = "Occuopation")]
         public string Occupation { get; set; } = null!;
@@ -37,14 +39,15 @@ namespace DentistClinic.Core.ViewModels
         [Display(Name = "Address")]
         public string Address { get; set; } = null!;
         public double CurentBalance { get; set; } = 0;
+        public double GainPayment { get; set; } = 0;
         public Boolean IsDeleted { get; set; } = false;
         public byte[]? ProfilePicture { get; set; }
-        public virtual ICollection<PaymentRecord> PaymentRecords { get; set; } = new List<PaymentRecord>();
+        public virtual List<PaymentViewModel> PaymentRecords { get; set; } = new List<PaymentViewModel>();
         public virtual List<AppointmentViewModel> Appointments { get; set; } = new List<AppointmentViewModel>();       
         public virtual ICollection<ChiefComplainPatient> ChiefComplainPatients { get; set; } = new List<ChiefComplainPatient>();
-        public virtual ICollection<Tplans> Tplans { get; set; } = new List<Tplans>();
+        public virtual List<TreatmentPlansViewModel> Tplans { get; set; } = new List<TreatmentPlansViewModel>();
         public virtual List<MedicalReportViewModel> MedicalHistories { get; set; } = new List<MedicalReportViewModel>();
-        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public virtual List<PrescriptionViewModel> Prescriptions { get; set; } = new List<PrescriptionViewModel>();
         public MedicalReportViewModel? MedicalReportViewModel { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using DentistClinic.Core.ViewModels;
 using DentistClinic.CustomeValidation;
 using DentistClinic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace DentistClinic.Controllers
 
         [AjaxOnly]
         [HttpGet]
+        [Authorize(Roles = "Doctor")]
         public IActionResult Create(int id)
         {
             MedicalReportViewModel viewModal = new MedicalReportViewModel();
@@ -34,6 +36,7 @@ namespace DentistClinic.Controllers
         [AjaxOnly]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> Create(MedicalReportViewModel model)
         {
 
@@ -125,6 +128,7 @@ namespace DentistClinic.Controllers
 
         [AjaxOnly]
         [HttpGet]
+        [Authorize(Roles = "Doctor")]
         public IActionResult Update(int id)
         {
             MedicalHistory model = _unitOfWork.medicalHistoryRepository.GetById(id);
@@ -152,6 +156,7 @@ namespace DentistClinic.Controllers
         [AjaxOnly]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> Update(MedicalReportViewModel model)
         {
 
@@ -249,6 +254,7 @@ namespace DentistClinic.Controllers
 
         [AjaxOnly]
         [HttpGet]
+        [Authorize(Roles = "Doctor , User")]
         public IActionResult Details(int id)
         {
             MedicalHistory model = _unitOfWork.medicalHistoryRepository.GetById(id);
@@ -275,6 +281,7 @@ namespace DentistClinic.Controllers
 
         [AjaxOnly]
         [HttpPost]
+        [Authorize(Roles = "Doctor")]
         public IActionResult Delete(int id)
         {
             MedicalHistory model = _unitOfWork.medicalHistoryRepository.GetById(id);

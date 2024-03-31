@@ -1,7 +1,10 @@
 ﻿@model MedicalReportViewModel;
+@inject UserManager<ApplicationUser> userManger;
 
-
-<div class="col-md-4 col-lg-12 col-xl-4 medical-report">
+@{
+    var applicationUser = await userManger.GetUserAsync(User) ?? new ApplicationUser();
+}
+<div class="col-md-4 col-lg-12 col-xl-4 medical-report boxing">
 
     <!--begin::Card-->
     <div class="card mb-6 mb-xl-9" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;">
@@ -10,7 +13,7 @@
             <!--begin::Header-->
             <div class="d-flex flex-stack mb-3">
                 <!--begin::Badge-->
-                <div class="badge badge-@((Model.EndDate == null) ? "danger" : "success") report-status">@((Model.StartDate == null) ? "Not Recovered" : "Recovered")</div>
+                <div class="badge badge-@((Model.EndDate == null) ? "danger" : "success") report-status">@((Model.EndDate == null) ? "Not Recovered" : "Recovered")</div>
                 <!--end::Badge-->
                 <!--begin::Menu-->
                 <div>
@@ -33,20 +36,24 @@
                             </a>
                         </div>
                         <!--end::Menu item-->
-                        <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="javascript:;" class="menu-link px-3 js-report-modal" data-update="true" data-title="Edit Medical Report" data-url="/MedicalReports/Update/@Model.Id">
-                                Edit
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
-                        <!--begin::Menu item-->
-                        <div class="menu-item px-3">
-                            <a href="javascript:;" class="menu-link px-3 js-delete-report" data-url="/MedicalReports/Delete/@Model.Id">
-                                Delete
-                            </a>
-                        </div>
-                        <!--end::Menu item-->
+                        @if (await userManger.IsInRoleAsync(applicationUser, "Doctor"))
+                        {
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-3">
+                                <a href="javascript:;" class="menu-link px-3 js-render-modal" data-update="true" data-title="Edit Medical Report" data-url="/MedicalReports/Update/@Model.Id" data-box="true">
+                                    Edit
+                                </a>
+                            </div>
+                            <!--end::Menu item-->
+                            <!--begin::Menu item-->
+                            <div class="menu-item px-3">
+                                <a href="javascript:;" class="menu-link px-3 js-delete-report" data-url="/MedicalReports/Delete/@Model.Id">
+                                    Delete
+                                </a>
+                            </div>
+                            <!--end::Menu item-->
+                        }
+
                     </div>
                     <!--end::Menu 3-->
                 </div>

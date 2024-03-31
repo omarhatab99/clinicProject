@@ -191,3 +191,58 @@ body {
 }
 
 /*end custom lightbox*/
+/*Timeline-icon*/
+.timeline .timeline-icon {
+    z-index: 1;
+    flex-shrink: 0;
+    margin-left: -20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--bs-gray-300);
+    border-radius: 50%;
+    border-style: dashed;
+}
+
+/*-----------*/
+.good-morning-blk {
+    background: #FFFFFF;
+    border-radius: 12px;
+    position: relative;
+    z-index: 9;
+}
+
+.morning-user {
+    padding: 50px 35px 50px 0px;
+}
+    .morning-user h2 {
+        font-size: 25px;
+        font-weight: 600;
+    }
+    .morning-user p {
+        font-size: 15px;
+        font-weight: 500;
+        color: rgba(51, 52, 72, 0.5);
+        margin-bottom: 0;
+    }
+
+    .morning-user h2 span {
+        color: #2E37A4;
+    }
+
+.position-blk {
+    background-image: url(/assets/images/bg-img-01.png);
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+}
+.morning-img img {
+    position: absolute;
+    bottom: 0;
+    vertical-align: middle;
+}
+

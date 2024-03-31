@@ -9,6 +9,6 @@
         public virtual Xray? Xray { get; set; }
         public int PrescriptionId { get; set; }
         public virtual Prescription? Prescriptions { get; set; }
-        public virtual ICollection<XrayPrescriptionImage>? XrayPrescriptionImages { get; set; }
+        public virtual ICollection<XrayPrescriptionImage> XrayPrescriptionImages { get; set; } = new List<XrayPrescriptionImage>();
     }
 }

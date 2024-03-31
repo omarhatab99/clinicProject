@@ -11,19 +11,22 @@ using System.Security.Claims;
 
 namespace DentistClinic.Controllers
 {
-    //[Authorize(Roles = "Doctor , Reception")]
+    [Authorize(Roles = "Doctor , Reception")]
     public class PatientsController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public PatientsController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork , ApplicationDbContext applicationDbContext)
+        public PatientsController(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork , ApplicationDbContext applicationDbContext , SignInManager<ApplicationUser> signInManager)
         {
             this._userManager = userManager;
             this._unitOfWork = unitOfWork;
             this._applicationDbContext = applicationDbContext;
+            this._signInManager = signInManager;
         }
+
         public IActionResult Index()
         {
             List<PatientViewModel> vmodels = _unitOfWork.patientRepository.GetAll().Where(x => x.IsDeleted)
@@ -40,7 +43,7 @@ namespace DentistClinic.Controllers
             return View(vmodels);
         }
 
-        [HttpGet]        
+        [HttpGet]
         public IActionResult Create()
         {
             //create a new patient 
@@ -76,8 +79,19 @@ namespace DentistClinic.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int id)
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int id)
         {
+            if(_signInManager.IsSignedIn(User))
+            {
+                var applicationUser = await _userManager.GetUserAsync(User) ?? new ApplicationUser();
+                if (await _userManager.IsInRoleAsync(applicationUser, "User") && applicationUser.PatientId != id)
+                {
+                    return LocalRedirect("~/Identity/Account/AccessDenied");
+                }
+            }
+
+
             //get patient 
             Patient model = _unitOfWork.patientRepository.GetById(id);
             PatientViewModel vmodel = new PatientViewModel()
@@ -92,6 +106,17 @@ namespace DentistClinic.Controllers
                 BirthDate = model.BirthDate,
                 Occupation = model.Occupation,
                 ProfilePicture = model.ProfilePicture,
+                ChiefComplainPatients = model.ChiefComplainPatients,
+                Tplans = model.Tplans.Select(x => new TreatmentPlansViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    Notes = x.Notes,
+                    PatientId = x.PatientId,
+                    Teeth = x.Teeth.Select(x => x.Name).ToList(),
+                }).ToList(),
                 Appointments = model.Appointments.Select(x => new AppointmentViewModel
                 {
                     Id = x.Id,
@@ -101,9 +126,16 @@ namespace DentistClinic.Controllers
                     EndTime = x.EndTime,
                     PatientId = (int)x.PatientId!
                 }).ToList(),
-                PaymentRecords = model.PaymentRecords,
-                ChiefComplainPatients = model.ChiefComplainPatients,
-                Tplans = model.Tplans,
+                PaymentRecords = model.PaymentRecords.Select(x => new PaymentViewModel
+                {
+                    Id = x.Id,
+                    Date = x.Date,
+                    Type = x.Type,
+                    Value = x.Value,
+                    Note = x.Note,
+                    PatientId = x.Id
+
+                }).ToList(),
                 MedicalHistories = model.MedicalHistories.Select(x => new MedicalReportViewModel
                 {
                     Id = x.Id,
@@ -114,9 +146,34 @@ namespace DentistClinic.Controllers
                     Documentations = x.MedicalHistoryImages.Select(x => x.Image).ToList(),
                     PatientId = x.PatientId
                 }).ToList(),
-                Prescriptions = model.Prescriptions,
+                Prescriptions = model.Prescriptions.Select(x => new PrescriptionViewModel
+                {
+                    Id = x.Id,
+                    Date = x.Date,
+                    Notes = x.Notes,
+                    patient = x.Patient!,
+
+                }).ToList(),
                 CurentBalance = model.CurentBalance
             };
+
+            List<PaymentRecord> payments = _unitOfWork.paymentsRepository.GetByPatientId(id);
+
+            if(payments.Count() > 0)
+            {
+                double gainPayments = 0;
+                foreach (var payment in payments)
+                {
+                    if(payment.Type == "Pay")
+                    {
+                        gainPayments += payment.Value;
+                    }
+                }
+
+                gainPayments = gainPayments * -1;
+                vmodel.GainPayment = gainPayments;
+            }
+
 
             return View(vmodel);
         }
@@ -134,7 +191,16 @@ namespace DentistClinic.Controllers
 
                 _unitOfWork.patientRepository.Update(patient);
 
-                return Ok();
+                if (patient.IsDeleted)
+                {
+                    return Ok("Patient Has been Deleted");
+                }
+                else
+                {
+                    return Ok("Patient Has been Restored");
+                }
+
+               
             }
             else
             {
@@ -285,5 +351,6 @@ namespace DentistClinic.Controllers
             return Ok(jsonData);
 
         }
+
     }
 }

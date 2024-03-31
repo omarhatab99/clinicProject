@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DentistClinic.Controllers
 {
-	//[Authorize(Roles = "Doctor , Reception")]
+	[Authorize(Roles = "Doctor , Reception")]
 	public class ReservationsController : Controller
 	{
         private readonly IUnitOfWork _unitOfWork;

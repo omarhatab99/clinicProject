@@ -114,14 +114,13 @@ var KTGeneralFullCalendarSelectDemos = function () {
             navLinks: true, // can click day/week names to navigate views
             selectable: true,
             selectMirror: true,
-
+            eventStartEditable: false,
             // Create new event
             select: function (arg) {
-                console.log(arg);
                 const dateSeleted = moment(arg.start).format('YYYY-MM-D');
                 const dateOfDay = moment(new Date()).format('YYYY-MM-D');
 
-                if (new Date(dateSeleted) <= new Date(dateOfDay)) {
+                if (new Date(dateSeleted) < new Date(dateOfDay)) {
                     Swal.fire({
                         text: "appointment can't be in the past ..!!",
                         icon: "warning",
@@ -214,17 +213,22 @@ var KTGeneralFullCalendarSelectDemos = function () {
                 let dateSeleted = moment(arg.event.start).format('YYYY-MM-D');
                 let dateOfDay = moment(new Date()).format('YYYY-MM-D');
 
-                if (new Date(dateSeleted) <= new Date(dateOfDay)) {
-                    $(".js-save-appointment").addClass("d-none");
-                }
-                else {
-                    $(".js-save-appointment").removeClass("d-none");
-                }
+
                 if (!$(".js-delete-appointment").length) {
                     jQuery('<btn>', {
                         class: 'btn-sm btn btn-danger js-delete-appointment',
                     }).text('Delete').insertBefore('.js-save-appointment');
                 }
+
+                if (new Date(dateSeleted) <= new Date(dateOfDay)) {
+                    $(".js-save-appointment").addClass("d-none");
+                    $(".js-delete-appointment").addClass("d-none");
+                }
+                else {
+                    $(".js-save-appointment").removeClass("d-none");
+                    $(".js-delete-appointment").removeClass("d-none");
+                }
+                
 
 
                 //show modal

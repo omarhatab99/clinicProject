@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DentistClinic.Controllers
 {
-	public class ContactsController : Controller
+    public class ContactsController : Controller
 	{
         private readonly IUnitOfWork _unitOfWork;
 
@@ -15,8 +15,8 @@ namespace DentistClinic.Controllers
         {
             this._unitOfWork = unitOfWork;
         }
-		//[Authorize(Roles = "Doctor")]
-		public IActionResult Index()
+        [Authorize(Roles = "Doctor")]
+        public IActionResult Index()
 		{
             List<ContactMsgViewModel> vmodel = _unitOfWork.contactRepository.GetAll().Select(x => new ContactMsgViewModel
             {
@@ -30,8 +30,8 @@ namespace DentistClinic.Controllers
 
             return View(vmodel);
         }
-		//[Authorize(Roles = "Doctor")]
-		public IActionResult Details(int id)
+        [Authorize(Roles = "Doctor")]
+        public IActionResult Details(int id)
 		{
 
 			ContactMsg model = _unitOfWork.contactRepository.GetById(id);
@@ -58,8 +58,8 @@ namespace DentistClinic.Controllers
 
 		}
 
-		//[Authorize(Roles = "Doctor")]
-		[AjaxOnly]
+        [Authorize(Roles = "Doctor")]
+        [AjaxOnly]
 		[HttpPost]
 		public IActionResult Delete(int id)
 		{

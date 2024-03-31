@@ -2,12 +2,13 @@
 using DentistClinic.Core.ViewModels;
 using DentistClinic.CustomeValidation;
 using DentistClinic.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DentistClinic.Controllers
 {
+    [Authorize(Roles = "Doctor")]
     public class AnalysisController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -16,6 +17,7 @@ namespace DentistClinic.Controllers
         {
             this._unitOfWork = unitOfWork;
         }
+
 		public IActionResult Index()
 		{
 			List<AnalysisViewModel> vmodel = _unitOfWork.analysisRepository.GetAll().Select(x => new AnalysisViewModel
